@@ -11,14 +11,13 @@ class Book extends Model
 {
     use HasFactory;
 
+    // Relationships
     public function reviews()
     {
         return $this->hasMany(Review::class);
     }
 
-    // Local Query Scope Builder 
-
-    // Title Scope
+    // Local Query Scope Builder Methods
     public function scopeTitle(Builder $query, string $title): Builder
     {
         return $query->where('title', 'LIKE', '%' . $title . '%');
@@ -40,14 +39,12 @@ class Book extends Model
         return $query->withAvg(['reviews' => fn (Builder $q) => $this->dateRangeFilter($q, $from, $to)], 'rating');
     }
 
-    // Highest Rated Scope
     public function scopeHighestRated(Builder $query): Builder
     {
         return $query->withAvgRating()
             ->orderBy('reviews_avg_rating', 'desc');
     }
 
-    // Min Amount of Reviews
     public function scopeMinReviews(Builder $query, int $minReviews): Builder
     {
         return $query->having('reviews_count', '>=', $minReviews);
